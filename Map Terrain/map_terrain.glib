@@ -1,0 +1,26 @@
+##OpenGL GLIB
+Perspective 70
+LookAt 0 0 3 0 0 0 0 1 0
+
+Vertex   map_terrain.vert
+Fragment map_terrain.frag
+Program map_terrain					\
+	uNoiseAmp <0. 0. 5.> 				\
+	uNoiseFreq <0.1 0.2 0.5> 			\
+		uDelta 0.1 				\
+		uBiasx <-2. 0. 2.> 			\
+		uBiasy <-2. 0. 2.> 			\
+		uBiasz <0. 0.1 1.> 			\
+		uLevel1 <0.1 0.2 0.8> 		\
+		uLevel2 <0.4 0.6 1.0> 		\
+		uTol <0. 0.2 01.0> 			\
+		uKa <0. 0.1 1.0> 			\
+		uKd <0. 0.6 1.0> 			\
+		uKs <0. 0.3 1.0> 			\
+		uShininess <3. 10. 200.> 		\
+		uLightX <-20. 0. 20.> 		\
+		uLightY <-20. 0. 20.> 		\
+		uLightZ <5. 10. 20.> 			\
+		uSpecularColor {1. 1. 1. 1.}
+
+QuadXY -0.2 1. 1000 1000
