@@ -1,0 +1,12 @@
+##OpenGL GLIB
+Perspective 90
+LookAt 7 14 10  0 0 0  0 10 0
+
+Vertex   proj06.vert
+Fragment proj06.frag
+Program  Project06  				\
+		uTol <0. 0. 1.>			\
+		//uRotate <-5. 0. 5.>
+
+Color 1  1  1
+Obj tigerstsH.obj

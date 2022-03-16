@@ -1,0 +1,4 @@
+
+0(48) : error C1008: undefined variable "uTol"
+0(48) : error C1008: undefined variable "uTol"
+

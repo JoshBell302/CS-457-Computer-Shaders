@@ -1,0 +1,5 @@
+Requirements:
+
+1. Do the coolest thing you can think of to a scene with at least one tiger in it.
+2. You can use glman or the GLSP API -- your choice.
+3. The intent of this project is to do something different from what we have done before. Stringing together ellipses, noise, displacement-mapping, bump-mapping, and cube-mapping using the exact code you already have is not acceptable.
