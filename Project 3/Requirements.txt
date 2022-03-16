@@ -1,0 +1,162 @@
+Requirements:
+
+The goals of this project are to use displacement mapping to turn a simple shape into a more interesting one, re-compute its normals, bump-map it, and light it.
+
+The Scenario:
+
+You have a 3D sinc function, which is built from a flat plat whose height is defined by the polar equation: z = sin(r) / r, where r is sqrt(x2 + y2). That is, the plate starts in the x-y plane. The sinc function displaces it in z. (More on this coming up.)
+
+The Sinc Function:
+
+This shape is a sine-ish wave that decreases as you go out away from the origin. The sinc function has significant applications in image filtering and reconstruction. But, from our point of view, it is just interesting to look at.
+
+If (x,y,z) are the vertex coordinates being processed right now, do something like this:
+
+------------------------------------------------
+float
+Sinc( float r, float k )
+{
+	if( r*k == 0. )
+		return 1.;
+	return sin(r*k) / (r*k);
+}
+
+float
+DerivSinc( float r, float k )
+{
+	if( r*k == 0. )
+		return 0;
+	return ( r*k*cos(r*k) - sin(r*k) ) / ( r*k*r*k );
+}
+
+	.	.	.
+
+vec4 newVertex = gl_Vertex;
+float r = sqrt( newVertex.x*newVertex.x + newVertex.y*newVertex.y );
+	// more efficient: float r = length( newVertex.xy );
+newVertex.z = uA * Sinc( r, uK );
+------------------------------------------------
+
+where uA is a constant that controls the amplitude of the surface. and uK is a constant that controls how fast the surface moves up and down (frequency).
+
+The original x and y, combined with the new z become the new vertex that gets multiplied by gl_ModelViewMatrix and gl_ModelViewProjectionMatrix.
+
+Not that it matters much to us right now, but an interesting property of the sinc function is that if uK == π then:
+
+1. The surface goes through z = 0. when r is a whole number
+2. The overall area under the 2D curve from -∞ to +∞ is 1.0
+
+
+Getting the Normal:
+Remember that the cross product of two vectors gives you a third vector that is perpendicular to both. So, to get the normal vector, determine 2 vectors that lie on the surface at the point in question and then take take their cross product, and then normalize it.
+
+Because those 2 vectors lie in the plane of the surface, they are tangent vectors. Each tangent is determined by taking calculus derivatives:
+
+------------------------------------------------
+float dzdr = uA * DerivSync( r, uK );
+float drdx = newVertex.x / r;
+float drdy = newVertex.y / r;
+float dzdx = dzdr * drdx;
+float dzdy = dzdr * drdy;
+------------------------------------------------
+
+The tangent vectors are then formed like this:
+
+------------------------------------------------
+Tx = (dx,0.,dz)
+Ty = (0.,dy,dz)
+------------------------------------------------
+
+So, in GLSL, we would say (using the derivative information we have):
+------------------------------------------------
+vec3 Tx = vec3(1., 0., dzdx )
+vec3 Ty = vec3(0., 1., dzdy )
+------------------------------------------------
+
+The new normal is then formed like this:
+
+vec3 newNormal = normalize( cross( Tx, Ty ) );
+
+This is the new normal vector that gets multiplied by gl_NormalMatrix.
+
+I'm assuming that your out variable that passes the normal over to the fragment shader is not called newNormal. If it is, don't redeclare it here. That essentially hides the out variable of the same name.
+
+Be sure your video shows this to be the proper normal by rotating your object to show that lighting works correctly.
+
+Lighting:
+Use per-fragment lighting. Start with the per-fragment lighting shader we looked at in class. Feel free to use it as-is or as a starting point, or feel free to make your own. At a minumim, you must be able to adjust the quantities: Ka, Kd, Ks, shininess, and the light position.
+
+Because we are doing bump-mapping, it must be per-fragment lighting, not per-vertex!
+
+Sample .glib File
+The question marks are not glman-isms -- they are asking you to determine good values in those places.
+
+------------------------------------------------
+##OpenGL GLIB
+
+Perspective 70
+LookAt 0 0 8  0 0 0  0 1 0
+
+Vertex		sinc.vert
+Fragment	sinc.frag
+Program		Sinc					\
+		uA <? ? ?>				\
+		uK <? ? ?>				\
+                uNoiseAmp <0. 0. ?>			\
+                uNoiseFreq <0. ? ?>			\
+                uKa <0. 0.1 1.0>                        \
+                uKd <0. 0.6 1.0>                        \
+                uKs <0. 0.3 1.0>                        \
+                uShininess <1. 10. 1000.>               \
+                uLightX <-20. 5. 20.>                   \
+                uLightY <-20. 10. 20.>                  \
+                uLightZ <-20. 20. 20.>                  \
+                uColor {1. .7 0. 1.}                    \
+                uSpecularColor {1. 1. 1. 1.}
+
+QuadXY  -0.2  5.  300  300
+------------------------------------------------
+
+Note that you need to break the quad down into many sub-quads (the "300 300" above) so that there are enough vertices to create a smoother displacement function.
+
+Bump-Mapping:
+You've determined the normal. Now you want to perturb it in a seemingly random, yet coherent, way. Sounds like a job for noise, right?
+
+Use the glman noise capability to get two noise values. These will be treated as an angle to rotate the normal about x and an angle to rotate the normal about y. Create at least two more sliders: uNoiseAmp and uNoiseFreq.
+
+------------------------------------------------
+        vec4 nvx = texture( Noise3, uNoiseFreq*vMC );
+	float angx = nvx.r + nvx.g + nvx.b + nvx.a  -  2.;	// -1. to +1.
+	angx *= uNoiseAmp;
+
+        vec4 nvy = texture( Noise3, uNoiseFreq*vec3(vMC.xy,vMC.z+0.5) );
+	float angy = nvy.r + nvy.g + nvy.b + nvy.a  -  2.;	// -1. to +1.
+	angy *= uNoiseAmp;
+------------------------------------------------
+
+Rotate the normal like this:
+
+------------------------------------------------
+vec3
+RotateNormal( float angx, float angy, vec3 n )
+{
+        float cx = cos( angx );
+        float sx = sin( angx );
+        float cy = cos( angy );
+        float sy = sin( angy );
+
+        // rotate about x:
+        float yp =  n.y*cx - n.z*sx;    // y'
+        n.z      =  n.y*sx + n.z*cx;    // z'
+        n.y      =  yp;
+        // n.x      =  n.x;
+
+        // rotate about y:
+        float xp =  n.x*cy + n.z*sy;    // x'
+        n.z      = -n.x*sy + n.z*cy;    // z'
+        n.x      =  xp;
+        // n.y      =  n.y;
+
+        return normalize( n );
+}
+------------------------------------------------
