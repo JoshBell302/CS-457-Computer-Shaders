@@ -1,0 +1,14 @@
+##OpenGL GLIB
+Perspective 70
+LookAt  0 0 3     0 0 0    0 1 0
+
+Vertex   proj07.vert
+Geometry proj07.geom
+Fragment proj07.frag
+Program  Project07			\
+	uRadiusOnly <true>		\
+	uLevel <0 3 3>			\
+	uQuantize <2. 50. 50.>		\
+	 uColor { 1.00 0.65 0.40 }
+
+Obj tigerstsH.obj
