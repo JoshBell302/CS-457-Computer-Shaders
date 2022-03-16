@@ -1,0 +1,7 @@
+
+0(55) : error C1115: unable to find compatible overloaded function "texture(sampler2D)"
+0(56) : error C1115: unable to find compatible overloaded function "texture(sampler2D)"
+0(58) : error C7537: OpenGL does not allow 'inout' after a type specifier
+0(58) : error C0000: syntax error, unexpected '=', expecting ';' or '(' at token "="
+0(59) : error C0000: syntax error, unexpected ',', expecting "::" at token ","
+

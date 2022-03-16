@@ -1,0 +1,18 @@
+##OpenGL GLIB
+Ortho -1. 1.  -1. 1.
+LookAt  0. 0. 2.  0. 0. 0.  0. 1. 0.
+
+Texture2D  5    slowpoke.bmp
+Texture2D  6    slowbro.bmp
+
+Vertex  		proj05.vert
+Fragment        	proj05.frag
+Program         	Project05  	\
+        TexUnitA 5                              	\
+        TexUnitB 6                              	\
+        uPower <1. 1. 10.>                     \
+        uRtheta <0. 0. 50.>                 	\
+        uBlend <0. 0. 1.>                       \
+        uContrast <1. 1. 2.>
+
+QuadXY  0.1  1.

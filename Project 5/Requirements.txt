@@ -1,0 +1,96 @@
+Requirements:
+
+1. Manipulation of images plays a big role in computer graphics, especially in the world of shaders. In this project, you will create an image manipulation "toolbox". The tools in your toolbox will be fisheye, whirl, blend, and contrast.
+2. Draw a quadrilateral, wth our usual 0.-1. 2D s,t texture coordinates. If you are using glman, the QuadXY will work nicely..
+3. Bring in 2 images as textures. Exactly what these are is up to you.
+4. If you are using glman, your glib file could look something like this:
+------------------------------------------------
+##OpenGL GLIB
+Ortho -1. 1.  -1. 1.
+LookAt  0. 0. 2.  0. 0. 0.  0. 1. 0.
+
+Texture2D  5    DogA.bmp
+Texture2D  6    DogB.bmp
+
+Vertex  	whirlfisheye.vert
+Fragment        whirlfisheye.frag
+Program         WhirlFisheye                    \
+        TexUnitA 5                              \
+        TexUnitB 6                              \
+        uPower <1. 1. 10.>                      \
+        uRtheta <0. 0. 50.>                     \
+        uBlend <0. 0. 1.>                       \
+        uContrast <1. 1. 2.>
+
+QuadXY  0.1  1.
+------------------------------------------------
+
+5. uPower is the exponent in the fisheye equation
+6. uRtheta is the radius multiplier in the whirl equation
+7. uBlend is the blending factor to use when blending the two images
+8. uContrast is the unmasking parameter to use when extrpolating in more contrast
+
+Top of Your Fragment Shader
+
+------------------------------------------------
+#version 330 compatibility
+
+uniform float uPower;
+uniform float uRtheta;
+uniform float uBlend;
+uniform float uContrast;
+uniform sampler2D TexUnitA;
+uniform sampler2D TexUnitB;
+
+in vec2 vST;
+
+const vec4 BLACK = vec4( 0., 0., 0., 1. );
+
+float
+atan2( float y, float x )
+{
+        if( x == 0. )
+        {
+                if( y >= 0. )
+                        return  PI/2.;
+                else
+                        return -PI/2.;
+        }
+        return atan(y,x);
+}
+------------------------------------------------
+
+Fisheye
+
+------------------------------------------------
+vec2 st = vST - vec2(0.5,0.5);  // put (0,0) in the middle so that the range is -0.5 to +0.5
+float r = the length of st
+float r' = (2r)uPower;
+Whirl
+
+float θ  = atan2( t, s );
+float θ' = θ - uRtheta * r;
+Restoring (s,t)
+
+st = r' * vec2( cosθ',sinθ' );  		// now in the range -1. to +1.
+st += ?;                        		// change the range to 0. to +2.
+st *= ?; 		       			// change the range to 0. to +1.
+------------------------------------------------
+
+Finishing Up
+
+------------------------------------------------
+// if s or t wander outside the range [0.,1.], paint the pixel black
+if( any( lessThan(st, ?) ) )
+	gl_FragColor = BLACK;
+else
+	if( any( greaterThan(st, ?) ) )
+		gl_FragColor = BLACK;
+	else
+	{
+		sample both textures at (s,t)
+		mix the two samples using uBlend
+		do the contrasting according to our Image notes
+		gl_FragColor = vec4( rgb, 1. );
+	}
+------------------------------------------------
