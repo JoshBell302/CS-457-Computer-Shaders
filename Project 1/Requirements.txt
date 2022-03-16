@@ -1,0 +1,70 @@
+Requirements:
+1. Use GLSL and either glman or the GLSL API to render some geometry (your choice), covered with elliptical dots.
+
+2. Remember that the border of an ellipse, defined in s and t coordinates is:
+(s-sc)2 / Ar2 + (t-tc)2 / Br2 = 1
+Be sure you compute the ellipse centers, sc and tc, correctly.
+
+3. The ellipse parameters must be set as uniform variables from glman sliders, like this:
+------------------------------------------------
+##OpenGL GLIB
+
+Perspective 90
+LookAt 0 0 2  0 0 0  0 1 0
+
+
+Vertex   oval.vert
+Fragment oval.frag
+Program  Oval				\
+	uAd <.001 .1 .5>		\
+	uBd <.001 .1 .5>		\
+	uTol <0. 0. 1.>
+
+Color 1. .9 0
+Sphere 1 50 50
+------------------------------------------------
+
+This will produce sliders for
+
+Parameter		What It Does
+uAd			Ellipse diameter for s
+uBd			Ellipse diameter for t
+uTol			Width of the blend between ellipse and non-ellipse areas
+
+4. Apply lighting. You can do this simply in the vertex shader, like this:
+------------------------------------------------
+#version 330 compatibility
+
+out vec3  vMCposition;
+out float vLightIntensity; 
+
+const vec3 LIGHTPOS   = vec3( -2., 0., 10. );
+
+void
+main( )
+{
+	vST = gl_MultiTexCoord0.st;
+
+	vec3 tnorm      = normalize( gl_NormalMatrix * gl_Normal );
+	vec3 ECposition = vec3( gl_ModelViewMatrix * gl_Vertex );
+	vLightIntensity  = abs( dot( normalize(LIGHTPOS - ECposition), tnorm ) );
+
+	vMCposition  = gl_Vertex.xyz;
+	gl_Position = gl_ModelViewProjectionMatrix * gl_Vertex;
+}
+------------------------------------------------
+
+or, you can do the full per-fragment-lighting thing.
+
+5. The uTol parameter is the width of a smoothstep( ) blend between the ellipse and non-ellipse areas, thus smoothing the abrupt color transition.
+
+float t = smoothstep( 1. - uTol, 1. + uTol, results_of_ellipse_equation );
+
+Then use t in the mix function.
+
+6. The choice of geometry is up to you. Keep it simple at first, then, if there is still time, feel free to get more creative. To try out the tigersts model, use the GLIB line:
+
+Obj tigerstsL.obj
+
+where the file tigerstsL.obj needs to be in the same folder as your .glib, .vert, and .frag files.
+"tigerstsL.obj" is the low-triangle-count version of the tiger. You can also try tigerstsM.obj and tigerstsH.obj.
