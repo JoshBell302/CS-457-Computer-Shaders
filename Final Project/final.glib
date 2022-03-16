@@ -1,0 +1,102 @@
+##OpenGL GLIB
+
+Perspective 90
+LookAt 12 7 12  10 0 0  0 5 0
+
+Vertex   final.vert
+Fragment final.frag
+Program  FinalProject  			\
+		uTol 0.05				\
+		uSquareColor {1. .5 1.}	\
+		uNoiseFreq 5.1219		\
+		uNoiseAmp 8.1707		\
+		uAd 0.5				\
+		uBd 0.5				\
+
+
+Color 1  0  1
+Sphere 1 500 500
+
+Vertex   final.vert
+Fragment final.frag
+Program  FinalProject  			\
+		uTol 0.6				\
+		uSquareColor {1. .5 1.}	\
+		uNoiseFreq 6.4024		\
+		uNoiseAmp 1.4024		\
+		uAd 0.5				\
+		uBd 0.5				\
+
+Color 1  1  0
+Translate 5 0 5
+TransformBegin
+	Sphere 2 500 500
+TransformEnd
+
+Vertex   final.vert
+Fragment final.frag
+Program  FinalProject  			\
+		uTol 0.28				\
+		uSquareColor {1. .5 1.}	\
+		uNoiseFreq 1.6184		\
+		uNoiseAmp 7.0122		\
+		uAd 0.0892				\
+		uBd 0.1410				\
+
+Color 1  0  0
+Translate 5 0 0
+TransformBegin
+	Sphere 1 500 500
+TransformEnd
+
+Vertex   final.vert
+Fragment final.frag
+Program  FinalProject  			\
+		uTol 0.94				\
+		uSquareColor {1. .5 1.}	\
+		uNoiseFreq 7.8988		\
+		uNoiseAmp 2.3381		\
+		uAd 0.1007				\
+		uBd 0.5				\
+
+Color 0  1  0
+Translate 5 0 -5
+TransformBegin
+	Sphere 4 500 500
+TransformEnd
+
+Vertex   final.vert
+Fragment final.frag
+Program  FinalProject  			\
+		uTol 0.33				\
+		uSquareColor {1. .5 1.}	\
+		uNoiseFreq 3.4756		\
+		uNoiseAmp 2.5610		\
+		uAd 0.3191				\
+		uBd 0.8841				\
+
+Color 0  1  1
+Translate -5 0 -5
+TransformBegin
+	Sphere 0.5 500 500
+TransformEnd
+
+Vertex   final.vert
+Fragment final.frag
+Program  FinalProject  			\
+		uTol 0.36				\
+		uSquareColor {1. .5 1.}	\
+		uNoiseFreq 1.9734		\
+		uNoiseAmp 0.8627		\
+		uAd 0.1064				\
+		uBd 0.1349				\
+
+Color 0  0  1
+Translate -5 0 0
+TransformBegin
+	Sphere .25 500 500
+TransformEnd
+
+
+
+

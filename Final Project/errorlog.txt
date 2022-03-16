@@ -1,0 +1,3 @@
+
+0(24) : error C0000: syntax error, unexpected integer constant, expecting "::" at token "<int-const>"
+
